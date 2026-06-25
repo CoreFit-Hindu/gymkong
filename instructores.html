@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GYM KONG — Instructores</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --orange:#e8640a;--orange-light:#f07820;--orange-dark:#c4520a;
+  --orange-glow:rgba(232,100,10,0.3);
+  --blue:#1a4fa0;--blue-light:#2563c4;
+  --bg:#0d0202;--bg2:#1a0505;--bg3:#230808;
+  --surface:rgba(255,255,255,0.05);--surface2:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --border-o:rgba(232,100,10,0.25);
+  --text:#f0e8e8;--text2:#a08888;--text3:#604848;
+  --font-display:'Black Han Sans',sans-serif;--font-body:'Nunito',sans-serif;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:50;background:rgba(13,2,2,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-o);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:58px;}
+.nav-brand{font-family:var(--font-display);font-size:1.4rem;letter-spacing:0.05em;display:flex;align-items:center;gap:10px;}
+.nav-brand span.gym{color:var(--orange);}
+.nav-brand span.kong{color:var(--blue-light);}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{background:none;border:none;font-family:var(--font-body);font-size:0.82rem;font-weight:700;color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all 0.18s;letter-spacing:0.03em;}
+.nav-tab:hover{color:var(--text);background:var(--surface);}
+.nav-tab.active{color:var(--orange-light);background:rgba(232,100,10,0.12);}
+.btn-sync{background:none;border:1px solid var(--border-o);border-radius:var(--radius-sm);color:var(--text2);font-size:0.8rem;font-family:var(--font-body);padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.18s;}
+.btn-sync:hover{border-color:var(--orange);color:var(--orange-light);}
+.btn-sync svg{width:14px;height:14px;}
+.btn-sync.spinning svg{animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+main{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2rem;}
+.stat-card{background:var(--bg2);border:1px solid var(--border-o);border-radius:var(--radius);padding:1rem 1.25rem;animation:fadeUp 0.4s ease both;}
+.stat-label{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
+.stat-val{font-family:var(--font-display);font-size:2rem;color:var(--orange-light);line-height:1;}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;}
+.search-wrap{position:relative;flex:1;min-width:220px;}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text3);pointer-events:none;}
+.search-wrap input{width:100%;height:40px;background:var(--surface);border:1px solid var(--border-o);border-radius:var(--radius-sm);padding:0 14px 0 38px;font-family:var(--font-body);font-size:0.88rem;color:var(--text);outline:none;transition:all 0.18s;}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-wrap input:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-glow);}
+.filter-sel{height:40px;background:var(--surface);border:1px solid var(--border-o);border-radius:var(--radius-sm);padding:0 12px;font-family:var(--font-body);font-size:0.85rem;color:var(--text2);outline:none;cursor:pointer;}
+.filter-sel option{background:#1a0505;}
+.result-count{font-size:0.82rem;color:var(--text3);}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.card{background:var(--bg2);border:1px solid var(--border-o);border-radius:var(--radius);padding:1.25rem;transition:all 0.2s;animation:fadeUp 0.4s ease both;cursor:pointer;}
+.card:hover{border-color:var(--orange);transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,100,10,0.15);}
+.card-top{display:flex;gap:14px;align-items:center;margin-bottom:1rem;}
+.avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--border-o);flex-shrink:0;}
+.avatar-placeholder{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--orange-dark),var(--blue));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.2rem;color:#fff;flex-shrink:0;}
+.card-info{flex:1;min-width:0;}
+.card-nombre{font-weight:800;font-size:0.95rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.esp-badge{display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px;background:rgba(232,100,10,0.15);color:var(--orange-light);}
+.card-datos{display:flex;flex-direction:column;gap:4px;font-size:0.78rem;color:var(--text2);}
+.card-dato{display:flex;align-items:center;gap:6px;}
+.card-dato svg{width:12px;height:12px;flex-shrink:0;color:var(--text3);}
+.horario-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.horario-pill{font-size:0.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(232,100,10,0.1);color:var(--orange-light);border:1px solid rgba(232,100,10,0.2);}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg3);border:1px solid var(--border-o);border-radius:16px;width:100%;max-width:500px;transform:translateY(16px);transition:transform 0.2s;overflow:hidden;}
+.modal-bg.open .modal{transform:translateY(0);}
+.modal-header{display:flex;align-items:center;gap:16px;padding:1.5rem;border-bottom:1px solid var(--border-o);}
+.modal-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--orange-dark);}
+.modal-avatar-ph{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--orange-dark),var(--blue));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.5rem;color:#fff;}
+.modal-nombre{font-family:var(--font-display);font-size:1.3rem;}
+.modal-esp{font-size:0.8rem;color:var(--text2);margin-top:2px;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;margin-left:auto;}
+.modal-body{padding:1.5rem;}
+.modal-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;font-size:0.88rem;color:var(--text2);}
+.modal-row svg{width:16px;height:16px;flex-shrink:0;margin-top:1px;color:var(--orange);}
+.modal-row span{color:var(--text);}
+.horario-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:6px;}
+.horario-grid-item{background:rgba(232,100,10,0.08);border:1px solid rgba(232,100,10,0.2);border-radius:6px;padding:5px 8px;font-size:0.72rem;color:var(--orange-light);font-weight:700;}
+
+.state-msg{text-align:center;padding:4rem 0;color:var(--text3);font-size:0.92rem;}
+.loader{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@media(max-width:640px){.stats-bar{grid-template-columns:repeat(2,1fr);}.nav-tabs{display:none;}main{padding:1.25rem 1rem 3rem;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand"><span class="gym">GYM</span><span class="kong">KONG</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active">Instructores</button>
+    <button class="nav-tab" onclick="location.href='alumnos.html'">Alumnos</button>
+    <button class="nav-tab" onclick="location.href='membresias.html'">Membresías</button>
+    <button class="nav-tab" onclick="location.href='asistencia.html'">Asistencia</button>
+    <button class="nav-tab" onclick="location.href='rutinas.html'">Rutinas</button>
+  </div>
+  <button class="btn-sync" id="btnSync" onclick="cargar(true)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    Actualizar
+  </button>
+</nav>
+<main>
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-label">Total instructores</div><div class="stat-val" id="st-total">—</div></div>
+    <div class="stat-card"><div class="stat-label">Instructor / Musculación</div><div class="stat-val" id="st-musc">—</div></div>
+    <div class="stat-card"><div class="stat-label">Instructor / Funcional</div><div class="stat-val" id="st-func">—</div></div>
+    <div class="stat-card"><div class="stat-label">Auxiliares suplentes</div><div class="stat-val" id="st-aux">—</div></div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search" placeholder="Buscar por nombre, DNI o email…" oninput="filtrar()">
+    </div>
+    <select class="filter-sel" id="filtroEsp" onchange="filtrar()">
+      <option value="">Todas las especialidades</option>
+      <option>Instructor/Musculacion</option>
+      <option>Instructor/Funcional</option>
+      <option>Auxiliar Suplente/Musculacion</option>
+      <option>Auxiliar Suplente/Funcional</option>
+    </select>
+    <span class="result-count" id="resultCount"></span>
+  </div>
+  <div class="grid" id="grid"><div class="state-msg"><div class="loader"></div>Cargando instructores…</div></div>
+</main>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div id="mAvatar"></div>
+      <div><div class="modal-nombre" id="mNombre"></div><div class="modal-esp" id="mEsp"></div></div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+const WORKER = 'https://gymkong-proxy.edu-gonza.workers.dev';
+let todos = [];
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const header = parseLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = parseLine(line);
+    const obj = {};
+    header.forEach((h,i) => obj[h.trim()] = String(vals[i]||'').trim());
+    return obj;
+  }).filter(r => Object.values(r).some(v=>v));
+}
+function parseLine(line) {
+  const result=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){result.push(cur);cur='';}else cur+=c;}
+  result.push(cur);
+  return result.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+function g(r,...keys){for(const k of keys){if(r[k]!==undefined&&r[k]!=='')return r[k];}return '';}
+function iniciales(n){return n.trim().split(' ').filter(Boolean).slice(0,2).map(p=>p[0].toUpperCase()).join('');}
+function fotoURL(url){const m=url.match(/[?&]id=([-\w]+)/);return m?`https://drive.google.com/thumbnail?id=${m[1]}&sz=w200`:url;}
+
+async function cargar(manual=false) {
+  const btn = document.getElementById('btnSync');
+  btn.classList.add('spinning');
+  document.getElementById('grid').innerHTML = '<div class="state-msg"><div class="loader"></div>Cargando instructores…</div>';
+  try {
+    const resp = await fetch(WORKER + '/instructores');
+    todos = parseCSV(await resp.text());
+    actualizarStats();
+    filtrar();
+    if(manual) mostrarToast('✓ Datos actualizados');
+  } catch(e) {
+    document.getElementById('grid').innerHTML = '<div class="state-msg">Error: ' + e.message + '</div>';
+  } finally { btn.classList.remove('spinning'); }
+}
+
+function actualizarStats() {
+  document.getElementById('st-total').textContent = todos.length;
+  document.getElementById('st-musc').textContent  = todos.filter(r=>g(r,'Especialidada/Diciplina').toLowerCase().includes('musc')&&g(r,'Especialidada/Diciplina').toLowerCase().includes('instructor')).length;
+  document.getElementById('st-func').textContent  = todos.filter(r=>g(r,'Especialidada/Diciplina').toLowerCase().includes('func')&&g(r,'Especialidada/Diciplina').toLowerCase().includes('instructor')).length;
+  document.getElementById('st-aux').textContent   = todos.filter(r=>g(r,'Especialidada/Diciplina').toLowerCase().includes('auxiliar')).length;
+}
+
+function filtrar() {
+  const q   = document.getElementById('search').value.toLowerCase();
+  const esp = document.getElementById('filtroEsp').value.toLowerCase();
+  const res = todos.filter(r => {
+    const nombre = g(r,'Nombre y Apellido').toLowerCase();
+    const dni    = g(r,'DNI');
+    const email  = g(r,'Correo electronico (e-mail)').toLowerCase();
+    if (q && !nombre.includes(q) && !dni.includes(q) && !email.includes(q)) return false;
+    if (esp && g(r,'Especialidada/Diciplina').toLowerCase() !== esp) return false;
+    return true;
+  });
+  document.getElementById('resultCount').textContent = res.length + ' instructor' + (res.length!==1?'es':'');
+  renderGrid(res);
+}
+
+function renderGrid(lista) {
+  const grid = document.getElementById('grid');
+  if (!lista.length) { grid.innerHTML = '<div class="state-msg">No se encontraron instructores.</div>'; return; }
+  grid.innerHTML = lista.map((r,i) => {
+    const nombre   = g(r,'Nombre y Apellido');
+    const esp      = g(r,'Especialidada/Diciplina');
+    const tel      = g(r,'Telefono');
+    const email    = g(r,'Correo electronico (e-mail)');
+    const foto     = g(r,'Sbir una foto');
+    const horarios = g(r,'Horarios Disponible').split(',').map(h=>h.trim()).filter(Boolean);
+    const avatarHtml = foto
+      ? `<img class="avatar" src="${fotoURL(foto)}" onerror="this.style.display='none'">`
+      : `<div class="avatar-placeholder">${iniciales(nombre)}</div>`;
+    const horariosHtml = horarios.slice(0,4).map(h=>`<span class="horario-pill">${h}</span>`).join('');
+    return `<div class="card" style="animation-delay:${i*0.05}s" onclick="abrirModal(${i})">
+      <div class="card-top">
+        ${avatarHtml}
+        <div class="card-info">
+          <div class="card-nombre">${nombre||'—'}</div>
+          <span class="esp-badge">${esp||'—'}</span>
+        </div>
+      </div>
+      <div class="card-datos">
+        ${tel?`<div class="card-dato"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.35 2 2 0 0 1 3.58 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${tel}</div>`:''}
+        ${email?`<div class="card-dato"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${email}</div>`:''}
+      </div>
+      ${horariosHtml?`<div class="horario-pills">${horariosHtml}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+let instActual = null;
+function abrirModal(idx) {
+  instActual = todos[idx];
+  const r = instActual;
+  const nombre   = g(r,'Nombre y Apellido');
+  const esp      = g(r,'Especialidada/Diciplina');
+  const tel      = g(r,'Telefono');
+  const email    = g(r,'Correo electronico (e-mail)');
+  const foto     = g(r,'Sbir una foto');
+  const horarios = g(r,'Horarios Disponible').split(',').map(h=>h.trim()).filter(Boolean);
+
+  document.getElementById('mAvatar').innerHTML = foto
+    ? `<img class="modal-avatar" src="${fotoURL(foto)}" onerror="this.outerHTML='<div class=modal-avatar-ph>${iniciales(nombre)}</div>'">`
+    : `<div class="modal-avatar-ph">${iniciales(nombre)}</div>`;
+  document.getElementById('mNombre').textContent = nombre;
+  document.getElementById('mEsp').textContent = esp;
+  document.getElementById('mBody').innerHTML = `
+    ${tel?`<div class="modal-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.35 2 2 0 0 1 3.58 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>${tel}</span></div>`:''}
+    ${email?`<div class="modal-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>${email}</span></div>`:''}
+    ${horarios.length?`<div class="modal-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><div><div style="margin-bottom:8px">Horarios disponibles</div><div class="horario-grid">${horarios.map(h=>`<div class="horario-grid-item">${h}</div>`).join('')}</div></div></div>`:''}
+  `;
+  document.getElementById('modalBg').classList.add('open');
+}
+function cerrarModal(){ document.getElementById('modalBg').classList.remove('open'); }
+document.addEventListener('keydown', e => { if(e.key==='Escape') cerrarModal(); });
+
+function mostrarToast(msg, isError=false) {
+  let t = document.getElementById('toast-gl');
+  if (!t) { t=document.createElement('div');t.id='toast-gl';t.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(10px);padding:10px 20px;border-radius:10px;font-size:.85rem;opacity:0;pointer-events:none;transition:all .3s;z-index:999;white-space:nowrap;font-family:var(--font-body)';document.body.appendChild(t); }
+  t.style.background=isError?'#1a0505':'#1a0a05';
+  t.style.border=isError?'1px solid #cc2222':'1px solid var(--orange)';
+  t.style.color=isError?'#ef9a9a':'#f0a070';
+  t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)';},3000);
+}
+
+cargar();
+</script>
+</body>
+</html>
