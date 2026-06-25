@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GYM KONG</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --orange:#e8640a;--orange-light:#f07820;--orange-dark:#c4520a;
+  --orange-glow:rgba(232,100,10,0.3);
+  --blue:#1a4fa0;--blue-light:#2563c4;
+  --bg:#0d0202;--bg2:#1a0505;--bg3:#230808;
+  --surface:rgba(255,255,255,0.05);--surface2:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0e8e8;--text2:#a08888;--text3:#604848;
+  --font-display:'Black Han Sans',sans-serif;--font-body:'Nunito',sans-serif;
+  --radius:12px;--radius-sm:8px;
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:50;background:rgba(13,17,23,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:58px;}
+.nav-brand{font-family:var(--font-display);font-size:1.35rem;font-weight:700;letter-spacing:0.03em;display:flex;align-items:center;gap:10px;}
+.nav-shield{width:28px;height:32px;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{background:none;border:none;font-family:var(--font-body);font-size:0.82rem;font-weight:600;color:var(--text2);padding:6px 14px;border-radius:6px;cursor:pointer;transition:all 0.18s;}
+.nav-tab:hover{color:var(--text);background:var(--surface);}
+.nav-tab.active{color:var(--orange-light);background:rgba(232,100,10,0.12);}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:640px){.nav-tabs{display:none;}}
+
+main{max-width:1000px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* PASO 1 - SELECCIONAR ALUMNO */
+.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;animation:fadeUp 0.4s ease both;}
+.step-title{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--orange);color:#fff;font-size:0.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+.buscar-wrap{position:relative;}
+.buscar-wrap input{width:100%;height:44px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 14px 0 42px;font-family:var(--font-body);font-size:0.95rem;color:var(--text);outline:none;transition:border-color 0.18s,box-shadow 0.18s;}
+.buscar-wrap input:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-glow);}
+.buscar-wrap input::placeholder{color:var(--text3);}
+.buscar-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--text3);pointer-events:none;}
+.sugerencias{position:absolute;top:48px;left:0;right:0;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);z-index:100;max-height:220px;overflow-y:auto;display:none;}
+.sugerencias.open{display:block;}
+.sug-item{padding:10px 16px;font-size:0.88rem;color:var(--text2);cursor:pointer;transition:background 0.15s;display:flex;justify-content:space-between;align-items:center;}
+.sug-item:hover{background:var(--surface2);color:var(--text);}
+.sug-dni{font-size:0.75rem;color:var(--text3);}
+
+/* ALUMNO SELECCIONADO */
+.alumno-header{background:var(--bg2);border:1px solid rgba(232,100,10,0.3);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;animation:fadeUp 0.3s ease both;}
+.alumno-header h2{font-family:var(--font-display);font-size:1.4rem;font-weight:700;}
+.alumno-header p{font-size:0.85rem;color:var(--text2);}
+.btn-cambiar{background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:0.8rem;font-family:var(--font-body);padding:6px 14px;cursor:pointer;transition:all 0.18s;}
+.btn-cambiar:hover{border-color:var(--red);color:#ef9a9a;}
+
+/* DÍAS TABS */
+.dias-wrap{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.dia-tab{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;cursor:pointer;transition:all 0.18s;text-align:center;min-width:110px;flex:1;}
+.dia-tab:hover{border-color:var(--border2);}
+.dia-tab.active{border-color:var(--orange);background:rgba(232,100,10,0.08);}
+.dia-tab.tiene-rutina{border-color:rgba(58,158,63,0.4);}
+.dia-tab.descanso{border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.04);}
+.dia-nombre{font-family:var(--font-display);font-size:0.95rem;font-weight:700;margin-bottom:2px;}
+.dia-tab.active .dia-nombre{color:var(--orange-light);}
+.dia-tab.descanso .dia-nombre{color:var(--amber);}
+.dia-grupo{font-size:0.7rem;color:var(--text3);}
+.dia-tab.tiene-rutina .dia-grupo{color:#f0a070;}
+.dia-icono{font-size:1rem;margin-bottom:4px;}
+
+/* EDITOR DE RUTINA */
+.rutina-editor{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;animation:fadeUp 0.3s ease both;}
+.editor-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.editor-header h3{font-family:var(--font-display);font-size:1.05rem;font-weight:700;}
+.grupo-sel{height:36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-family:var(--font-body);font-size:0.85rem;color:var(--text2);outline:none;cursor:pointer;}
+.grupo-sel option{background:#230808;}
+.btn-descanso{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-sm);color:var(--amber);font-size:0.8rem;font-family:var(--font-body);padding:6px 14px;cursor:pointer;transition:all 0.18s;}
+.btn-descanso:hover{background:rgba(245,158,11,0.2);}
+
+/* TABLA EJERCICIOS */
+.tabla-ejercicios{width:100%;border-collapse:collapse;}
+.tabla-ejercicios thead tr{background:var(--bg3);border-bottom:1px solid var(--border2);}
+.tabla-ejercicios thead th{padding:10px 12px;text-align:left;font-size:0.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;}
+.tabla-ejercicios tbody tr{border-bottom:1px solid var(--border);}
+.tabla-ejercicios tbody tr:last-child{border-bottom:none;}
+.tabla-ejercicios tbody td{padding:8px 12px;vertical-align:middle;}
+
+.input-ej{width:100%;height:36px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 10px;font-family:var(--font-body);font-size:0.85rem;color:var(--text);outline:none;transition:border-color 0.18s;}
+.input-ej:focus{border-color:var(--orange);}
+.input-ej::placeholder{color:var(--text3);}
+.input-num{width:70px;text-align:center;}
+.input-ref{width:100%;}
+
+.btn-ref{background:rgba(33,150,243,0.1);border:1px solid rgba(33,150,243,0.3);border-radius:6px;color:#90caf9;font-size:0.75rem;font-family:var(--font-body);padding:5px 10px;cursor:pointer;white-space:nowrap;transition:all 0.18s;}
+.btn-ref:hover{background:rgba(33,150,243,0.2);}
+.ref-preview{width:48px;height:36px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;}
+
+.btn-del-row{background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:4px;transition:color 0.18s;}
+.btn-del-row:hover{color:#ef9a9a;}
+
+.add-ejercicio-row{padding:12px 1.5rem;border-top:1px solid var(--border);}
+.btn-add-ej{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:0.85rem;font-family:var(--font-body);padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.18s;width:100%;justify-content:center;}
+.btn-add-ej:hover{border-color:var(--orange);color:var(--orange-light);}
+
+/* ACCIONES */
+.acciones{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-guardar{flex:2;height:48px;background:var(--orange);border:none;border-radius:var(--radius-sm);color:#fff;font-family:var(--font-display);font-size:1.1rem;font-weight:700;letter-spacing:0.05em;cursor:pointer;transition:background 0.18s;}
+.btn-guardar:hover{background:var(--orange-light);}
+.btn-progreso{flex:1;height:48px;background:rgba(33,150,243,0.15);border:1px solid rgba(33,150,243,0.3);border-radius:var(--radius-sm);color:#90caf9;font-family:var(--font-display);font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.18s;}
+.btn-progreso:hover{background:rgba(33,150,243,0.25);}
+
+/* ESTADO VACÍO */
+.empty-rutina{text-align:center;padding:2.5rem;color:var(--text3);font-size:0.88rem;}
+
+/* MODAL REF */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-bg.open{opacity:1;pointer-events:all;}
+.modal-ref{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);width:100%;max-width:440px;padding:1.5rem;transform:translateY(16px);transition:transform 0.2s;}
+.modal-bg.open .modal-ref{transform:translateY(0);}
+.modal-ref h3{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:1rem;}
+.modal-ref label{display:block;font-size:0.78rem;color:var(--text2);margin-bottom:6px;font-weight:600;}
+.modal-ref input{width:100%;height:42px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:0 12px;font-family:var(--font-body);font-size:0.9rem;color:var(--text);outline:none;margin-bottom:1rem;}
+.modal-ref input:focus{border-color:var(--orange);}
+.modal-ref-btns{display:flex;gap:10px;}
+.btn-modal-cancel{flex:1;height:40px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-family:var(--font-body);cursor:pointer;}
+.btn-modal-ok{flex:2;height:40px;background:var(--orange);border:none;border-radius:var(--radius-sm);color:#fff;font-family:var(--font-display);font-size:1rem;font-weight:700;cursor:pointer;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    
+    HINDÚ <span style="color:var(--text2);font-weight:500;margin:0 4px">—</span> GYM KONG
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab" onclick="location.href='instructores.html'">Instructores</button>
+    <button class="nav-tab" onclick="location.href='alumnos.html'">Alumnos</button>
+    <button class="nav-tab" onclick="location.href='membresias.html'">Membresías</button>
+    <button class="nav-tab" onclick="location.href='asistencia.html'">Asistencia</button>
+    <button class="nav-tab active">Rutinas</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Paso 1: buscar alumno -->
+  <div class="step-card" id="step-buscar">
+    <div class="step-title">
+      <div class="step-num">1</div>
+      Seleccioná el alumno
+    </div>
+    <div class="buscar-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="buscarInput" placeholder="Escribí el nombre del alumno…" oninput="buscarFn()" autocomplete="off">
+      <div class="sugerencias" id="sugerencias"></div>
+    </div>
+  </div>
+
+  <!-- Header alumno seleccionado -->
+  <div class="alumno-header" id="alumnoHeader" style="display:none">
+    <div>
+      <h2 id="alumnoNombre">—</h2>
+      <p id="alumnoInfo">—</p>
+    </div>
+    <button class="btn-cambiar" onclick="cambiarAlumno()">Cambiar alumno</button>
+  </div>
+
+  <!-- Días tabs -->
+  <div class="dias-wrap" id="diasWrap" style="display:none"></div>
+
+  <!-- Editor rutina del día -->
+  <div class="rutina-editor" id="rutinaEditor" style="display:none">
+    <div class="editor-header">
+      <h3 id="editorTitulo">Lunes</h3>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em">Grupo 1</label>
+          <select class="grupo-sel" id="grupoSel1" onchange="actualizarGrupos()">
+            <option value="">—</option>
+          <optgroup label="Pecho y Brazos">
+            <option>Pecho</option>
+            <option>Bíceps</option>
+            <option>Tríceps</option>
+            <option>Hombros</option>
+            <option>Antebrazos</option>
+          </optgroup>
+          <optgroup label="Espalda">
+            <option>Espalda Alta</option>
+            <option>Espalda Baja</option>
+            <option>Trapecio</option>
+          </optgroup>
+          <optgroup label="Piernas">
+            <option>Cuádriceps</option>
+            <option>Femoral</option>
+            <option>Glúteos</option>
+            <option>Gemelos</option>
+            <option>Aductores</option>
+          </optgroup>
+          <optgroup label="Core">
+            <option>Abdomen</option>
+            <option>Lumbares</option>
+          </optgroup>
+          <optgroup label="General">
+            <option>Cuerpo Completo</option>
+            <option>Funcional</option>
+            <option>Cardio</option>
+          </optgroup>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em">Grupo 2</label>
+          <select class="grupo-sel" id="grupoSel2" onchange="actualizarGrupos()">
+            <option value="">—</option>
+          <optgroup label="Pecho y Brazos">
+            <option>Pecho</option>
+            <option>Bíceps</option>
+            <option>Tríceps</option>
+            <option>Hombros</option>
+            <option>Antebrazos</option>
+          </optgroup>
+          <optgroup label="Espalda">
+            <option>Espalda Alta</option>
+            <option>Espalda Baja</option>
+            <option>Trapecio</option>
+          </optgroup>
+          <optgroup label="Piernas">
+            <option>Cuádriceps</option>
+            <option>Femoral</option>
+            <option>Glúteos</option>
+            <option>Gemelos</option>
+            <option>Aductores</option>
+          </optgroup>
+          <optgroup label="Core">
+            <option>Abdomen</option>
+            <option>Lumbares</option>
+          </optgroup>
+          <optgroup label="General">
+            <option>Cuerpo Completo</option>
+            <option>Funcional</option>
+            <option>Cardio</option>
+          </optgroup>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em">Grupo 3</label>
+          <select class="grupo-sel" id="grupoSel3" onchange="actualizarGrupos()">
+            <option value="">—</option>
+          <optgroup label="Pecho y Brazos">
+            <option>Pecho</option>
+            <option>Bíceps</option>
+            <option>Tríceps</option>
+            <option>Hombros</option>
+            <option>Antebrazos</option>
+          </optgroup>
+          <optgroup label="Espalda">
+            <option>Espalda Alta</option>
+            <option>Espalda Baja</option>
+            <option>Trapecio</option>
+          </optgroup>
+          <optgroup label="Piernas">
+            <option>Cuádriceps</option>
+            <option>Femoral</option>
+            <option>Glúteos</option>
+            <option>Gemelos</option>
+            <option>Aductores</option>
+          </optgroup>
+          <optgroup label="Core">
+            <option>Abdomen</option>
+            <option>Lumbares</option>
+          </optgroup>
+          <optgroup label="General">
+            <option>Cuerpo Completo</option>
+            <option>Funcional</option>
+            <option>Cardio</option>
+          </optgroup>
+          </select>
+        </div>
+        <button class="btn-descanso" onclick="marcarDescanso()" style="align-self:flex-end;margin-bottom:2px">🌙 Descanso</button>
+      </div>
+    </div>
+    <table class="tabla-ejercicios">
+      <thead>
+        <tr>
+          <th style="width:30%">Ejercicio</th>
+          <th style="width:12%">Peso (kg)</th>
+          <th style="width:10%">Series</th>
+          <th style="width:10%">Reps</th>
+          <th style="width:28%">Referencia</th>
+          <th style="width:5%"></th>
+        </tr>
+      </thead>
+      <tbody id="ejerciciosBody"></tbody>
+    </table>
+    <div class="add-ejercicio-row">
+      <button class="btn-add-ej" onclick="agregarEjercicio()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar Ejercicio
+      </button>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div class="acciones" id="acciones" style="display:none">
+    <button class="btn-guardar" onclick="guardarRutina()">💾 GUARDAR RUTINA</button>
+    <button class="btn-progreso" onclick="alert('Próximamente: Ver Progreso del Alumno')">📈 VER PROGRESO</button>
+  </div>
+
+</main>
+
+<!-- Modal referencia -->
+<div class="modal-bg" id="modalRef" onclick="cerrarModalRef(event)">
+  <div class="modal-ref">
+    <h3>Agregar referencia</h3>
+    <label>URL de imagen o video (YouTube, Drive, etc.)</label>
+    <input type="text" id="refInput" placeholder="https://…">
+    <div class="modal-ref-btns">
+      <button class="btn-modal-cancel" onclick="document.getElementById('modalRef').classList.remove('open')">Cancelar</button>
+      <button class="btn-modal-ok" onclick="confirmarRef()">CONFIRMAR</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKER_ALUMNOS    = 'https://gymkong-proxy.edu-gonza.workers.dev/alumnos';
+const WORKER_EJERCICIOS = 'https://gymkong-proxy.edu-gonza.workers.dev/ejercicios';
+const WORKER_RUTINAS  = 'https://gymkong-proxy.edu-gonza.workers.dev/rutinas';
+const API_RUTINAS     = 'https://gymkong-proxy.edu-gonza.workers.dev/api/rutinas';
+
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+// Base de datos de ejercicios — se carga desde Google Sheets
+let DB_EJERCICIOS = {};
+
+let alumnos      = [];
+let rutinasExist = []; // rutinas guardadas en Sheet
+let alumnoActual = null;
+let diaActual    = 'Lunes';
+let refRowIdx    = null; // índice de fila para el modal de referencia
+
+// Estado local de la rutina: { dia: { grupo, descanso, ejercicios[] } }
+let estadoRutina = {};
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const header = parseLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = parseLine(line);
+    const obj = {};
+    header.forEach((h,i) => obj[h.trim()] = String(vals[i]||'').trim());
+    return obj;
+  }).filter(r => Object.values(r).some(v=>v));
+}
+function parseLine(line) {
+  const result=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){result.push(cur);cur='';}else cur+=c;}
+  result.push(cur);
+  return result.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+
+async function init() {
+  try {
+    const [respAlum, respRut, respEj] = await Promise.all([
+      fetch(WORKER_ALUMNOS),
+      fetch(WORKER_RUTINAS),
+      fetch(WORKER_EJERCICIOS)
+    ]);
+    alumnos      = parseCSV(await respAlum.text());
+    rutinasExist = parseCSV(await respRut.text());
+    const ejerciciosRaw = parseCSV(await respEj.text());
+
+    // Reconstruir DB_EJERCICIOS desde la Sheet
+    DB_EJERCICIOS = {};
+    ejerciciosRaw.forEach(r => {
+      const musculo  = String(r['Musculo']||r['musculo']||r['Músculo']||'').trim();
+      const ejercicio= String(r['Ejercicio']||r['ejercicio']||'').trim();
+      const modalidad= String(r['Modalidad']||r['modalidad']||'').trim();
+      const ref      = String(r['Referencia']||r['referencia']||r['Link']||r['link']||r['Ejemplo']||r['ejemplo']||'').trim();
+      if (!musculo || !ejercicio) return;
+      if (!DB_EJERCICIOS[musculo]) DB_EJERCICIOS[musculo] = [];
+      DB_EJERCICIOS[musculo].push({ ejercicio, modalidad, referencia: ref });
+    });
+    console.log('Grupos cargados:', Object.keys(DB_EJERCICIOS));
+  } catch(e) { console.error(e); }
+}
+
+// ── Buscador ──
+function buscarFn() {
+  const q = document.getElementById('buscarInput').value.toLowerCase().trim();
+  const sug = document.getElementById('sugerencias');
+  if (!q || q.length < 2) { sug.classList.remove('open'); return; }
+  const res = alumnos.filter(a =>
+    String(a['Nmbre y Apellido']||a['Nombre y Apellido']||'').toLowerCase().includes(q)
+  ).slice(0, 8);
+  if (!res.length) { sug.classList.remove('open'); return; }
+  sug.innerHTML = res.map(a => {
+    const nombre = String(a['Nmbre y Apellido']||a['Nombre y Apellido']||'').trim();
+    const dni    = String(a['DNI']||'').trim();
+    const act    = String(a['Actividad']||'').trim();
+    return `<div class="sug-item" onclick="selAlumno('${nombre}','${dni}','${act}')">
+      <span>${nombre}</span><span class="sug-dni">DNI: ${dni} · ${act}</span>
+    </div>`;
+  }).join('');
+  sug.classList.add('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.buscar-wrap')) document.getElementById('sugerencias').classList.remove('open');
+});
+
+function selAlumno(nombre, dni, actividad) {
+  alumnoActual = { nombre, dni, actividad };
+  document.getElementById('sugerencias').classList.remove('open');
+  document.getElementById('buscarInput').value = '';
+  document.getElementById('step-buscar').style.display = 'none';
+
+  document.getElementById('alumnoNombre').textContent = nombre;
+  document.getElementById('alumnoInfo').textContent   = 'DNI: ' + dni + (actividad ? ' · ' + actividad : '');
+  document.getElementById('alumnoHeader').style.display = 'flex';
+  document.getElementById('diasWrap').style.display    = 'flex';
+  document.getElementById('acciones').style.display    = 'flex';
+
+  // Cargar rutina existente del alumno
+  cargarRutinaAlumno(dni);
+  renderDias();
+  selDia('Lunes');
+}
+
+function cargarRutinaAlumno(dni) {
+  estadoRutina = {};
+  DIAS.forEach(d => estadoRutina[d] = { grupos:['','',''], descanso:false, ejercicios:[] });
+
+  const misRutinas = rutinasExist.filter(r => String(r['DNI Alumno']||'').trim() === dni);
+  misRutinas.forEach(r => {
+    const dia = String(r['Dia']||'').trim();
+    if (!estadoRutina[dia]) return;
+    if (String(r['Grupo Muscular']||'').trim() === 'Descanso') {
+      estadoRutina[dia].descanso = true;
+      return;
+    }
+    if (!estadoRutina[dia].grupos) estadoRutina[dia].grupos = ['','',''];
+    const grupoExist = String(r['Grupo Muscular']||'').trim();
+    if (grupoExist && grupoExist !== 'Descanso') {
+      const idx = estadoRutina[dia].grupos.findIndex(g => !g || g === grupoExist);
+      if (idx !== -1) estadoRutina[dia].grupos[idx] = grupoExist;
+      else estadoRutina[dia].grupos[0] = grupoExist;
+    }
+    estadoRutina[dia].ejercicios.push({
+      ejercicio:   String(r['Ejercicio']||'').trim(),
+      peso:        String(r['Peso']||'').trim(),
+      series:      String(r['Series']||'').trim(),
+      repeticiones:String(r['Repeticiones']||'').trim(),
+      referencia:  String(r['Referencia']||'').trim(),
+    });
+  });
+}
+
+function cambiarAlumno() {
+  alumnoActual = null;
+  estadoRutina = {};
+  document.getElementById('step-buscar').style.display   = 'block';
+  document.getElementById('alumnoHeader').style.display  = 'none';
+  document.getElementById('diasWrap').style.display      = 'none';
+  document.getElementById('rutinaEditor').style.display  = 'none';
+  document.getElementById('acciones').style.display      = 'none';
+}
+
+// ── Días ──
+function renderDias() {
+  const wrap = document.getElementById('diasWrap');
+  wrap.innerHTML = DIAS.map(dia => {
+    const est = estadoRutina[dia] || {};
+    const tieneEj = est.ejercicios && est.ejercicios.length > 0;
+    const descanso = est.descanso;
+    const cls = `dia-tab${diaActual===dia?' active':''}${tieneEj?' tiene-rutina':''}${descanso?' descanso':''}`;
+    const icono = descanso ? '🌙' : tieneEj ? '✅' : '📋';
+    const grupos = est.grupos || ['','',''];
+    const gruposLabel = grupos.filter(Boolean).join(' + ');
+    const subtxt = descanso ? 'Descanso' : gruposLabel || 'Sin asignar';
+    return `<div class="${cls}" onclick="selDia('${dia}')">
+      <div class="dia-icono">${icono}</div>
+      <div class="dia-nombre">${dia}</div>
+      <div class="dia-grupo">${subtxt}</div>
+    </div>`;
+  }).join('');
+}
+
+function selDia(dia) {
+  diaActual = dia;
+  renderDias();
+
+  const est = estadoRutina[dia] || { grupo:'', descanso:false, ejercicios:[] };
+  document.getElementById('editorTitulo').textContent = dia;
+  const grupos = est.grupos || ['','',''];
+  document.getElementById('grupoSel1').value = grupos[0] || '';
+  document.getElementById('grupoSel2').value = grupos[1] || '';
+  document.getElementById('grupoSel3').value = grupos[2] || '';
+  document.getElementById('rutinaEditor').style.display = 'block';
+  renderEjercicios();
+}
+
+function actualizarGrupos() {
+  const g1 = document.getElementById('grupoSel1').value;
+  const g2 = document.getElementById('grupoSel2').value;
+  const g3 = document.getElementById('grupoSel3').value;
+  estadoRutina[diaActual].grupos   = [g1, g2, g3];
+  estadoRutina[diaActual].descanso = false;
+
+  // Reconstruir ejercicios combinando los 3 grupos
+  const nuevosEj = [];
+  [g1, g2, g3].forEach(grupo => {
+    if (grupo && DB_EJERCICIOS[grupo]) {
+      DB_EJERCICIOS[grupo].forEach(e => {
+        // Evitar duplicados
+        if (!nuevosEj.find(x => x.ejercicio === e.ejercicio)) {
+          nuevosEj.push({ ejercicio: e.ejercicio, peso: '', series: '3', repeticiones: '10', referencia: e.referencia });
+        }
+      });
+    }
+  });
+  estadoRutina[diaActual].ejercicios = nuevosEj;
+  renderEjercicios();
+  renderDias();
+}
+
+function marcarDescanso() {
+  estadoRutina[diaActual].descanso  = true;
+  estadoRutina[diaActual].grupos    = ['','',''];
+  estadoRutina[diaActual].ejercicios= [];
+  document.getElementById('grupoSel1').value = '';
+  document.getElementById('grupoSel2').value = '';
+  document.getElementById('grupoSel3').value = '';
+  renderEjercicios();
+  renderDias();
+}
+
+// ── Ejercicios ──
+function renderEjercicios() {
+  const est  = estadoRutina[diaActual];
+  const tbody= document.getElementById('ejerciciosBody');
+
+  if (est.descanso) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-rutina">🌙 Día de descanso</div></td></tr>`;
+    return;
+  }
+  if (!est.ejercicios.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-rutina">No hay ejercicios. Hacé click en "+ Agregar Ejercicio"</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = est.ejercicios.map(function(ej, idx2) {
+    if (ej.separador) {
+      return '<tr><td colspan="6" style="padding:8px 12px;background:rgba(232,100,10,0.08)"><span style="font-size:0.75rem;font-weight:700;color:#f0a070">' + ej.ejercicio.replace(/──/g,'').trim() + '</span></td></tr>';
+    }
+    var refHtml = ej.referencia
+      ? '<img class="ref-preview" src="' + getThumb(ej.referencia) + '" onclick="abrirRef(' + idx2 + ')" onerror="this.style.display=\'none\'">'
+        + '<button class="btn-ref" onclick="abrirRef(' + idx2 + ')">✏️ Editar</button>'
+      : '<button class="btn-ref" onclick="abrirRef(' + idx2 + ')">🔗 Agregar</button>';
+    return '<tr>'
+      + '<td><input class="input-ej" type="text" placeholder="Ejercicio" value="' + ej.ejercicio + '" data-i="' + idx2 + '" data-f="ejercicio" onchange="upEjD(this)"></td>'
+      + '<td><input class="input-ej input-num" type="number" placeholder="kg" value="' + ej.peso + '" data-i="' + idx2 + '" data-f="peso" onchange="upEjD(this)"></td>'
+      + '<td><input class="input-ej input-num" type="number" placeholder="3" value="' + ej.series + '" data-i="' + idx2 + '" data-f="series" onchange="upEjD(this)"></td>'
+      + '<td><input class="input-ej input-num" type="number" placeholder="10" value="' + ej.repeticiones + '" data-i="' + idx2 + '" data-f="repeticiones" onchange="upEjD(this)"></td>'
+      + '<td>' + refHtml + '</td>'
+      + '<td><button class="btn-del-row" onclick="borrarEj(' + idx2 + ')">✕</button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+function getThumb(url) {
+  // YouTube thumbnail
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (yt) return `https://img.youtube.com/vi/${yt[1]}/default.jpg`;
+  return url;
+}
+
+function upEjD(el) { estadoRutina[diaActual].ejercicios[parseInt(el.dataset.i)][el.dataset.f] = el.value; }
+function upEj(idx, campo, val) {
+  estadoRutina[diaActual].ejercicios[idx][campo] = val;
+}
+function upEjEvt(el) {
+  var idx   = parseInt(el.dataset.idx);
+  var campo = el.dataset.field;
+  estadoRutina[diaActual].ejercicios[idx][campo] = el.value;
+}
+
+function agregarEjercicio() {
+  const est = estadoRutina[diaActual];
+  if (est.descanso) { mostrarToast('Este día está marcado como descanso', true); return; }
+  est.ejercicios.push({ ejercicio:'', peso:'', series:'', repeticiones:'', referencia:'' });
+  renderEjercicios();
+  // Focus en el último input
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('#ejerciciosBody input[type="text"]');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+}
+
+function borrarEj(idx) {
+  estadoRutina[diaActual].ejercicios.splice(idx, 1);
+  renderEjercicios();
+}
+
+// ── Modal referencia ──
+function abrirRef(idx) {
+  refRowIdx = idx;
+  const ref = estadoRutina[diaActual].ejercicios[idx].referencia;
+  document.getElementById('refInput').value = ref || '';
+  document.getElementById('modalRef').classList.add('open');
+}
+function confirmarRef() {
+  const val = document.getElementById('refInput').value.trim();
+  estadoRutina[diaActual].ejercicios[refRowIdx].referencia = val;
+  document.getElementById('modalRef').classList.remove('open');
+  renderEjercicios();
+}
+function cerrarModalRef(e) {
+  if (e.target === document.getElementById('modalRef')) document.getElementById('modalRef').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key==='Escape') document.getElementById('modalRef').classList.remove('open'); });
+
+// ── Guardar ──
+async function guardarRutina() {
+  if (!alumnoActual) { mostrarToast('Seleccioná un alumno primero', true); return; }
+
+  let dniInstructor = '';
+  try { dniInstructor = JSON.parse(sessionStorage.getItem('gk_user')||'{}').dni||''; } catch(e){}
+
+  const filas = [];
+  DIAS.forEach(dia => {
+    const est = estadoRutina[dia];
+    if (est.descanso) {
+      filas.push({ dniAlumno: alumnoActual.dni, nombreAlumno: alumnoActual.nombre, dia, grupoMuscular:'Descanso', ejercicio:'—', series:'—', repeticiones:'—', peso:'—', referencia:'', dniInstructor });
+    } else {
+      const gruposLabel = (est.grupos||['','','']).filter(Boolean).join(' + ');
+      est.ejercicios.forEach(ej => {
+        if (!ej.ejercicio) return;
+        filas.push({ dniAlumno: alumnoActual.dni, nombreAlumno: alumnoActual.nombre, dia, grupoMuscular: gruposLabel||'', ejercicio: ej.ejercicio, series: ej.series, repeticiones: ej.repeticiones, peso: ej.peso, referencia: ej.referencia, dniInstructor });
+      });
+    }
+  });
+
+  if (!filas.length) { mostrarToast('Agregá al menos un ejercicio', true); return; }
+
+  mostrarToast('Guardando rutina…');
+
+  try {
+    const resp = await fetch(API_RUTINAS, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'guardar', filas: filas }),
+    });
+    const result = await resp.json().catch(()=>({ok:false}));
+    if (result.ok) {
+      mostrarToast('✓ Rutina guardada correctamente (' + filas.length + ' ejercicios)');
+    } else {
+      mostrarToast('⚠ Guardado con posibles errores, verificá la planilla', true);
+    }
+    renderDias();
+  } catch(e) {
+    console.error(e);
+    mostrarToast('Error al guardar: ' + e.message, true);
+  }
+}
+
+function mostrarToast(msg, isError=false) {
+  let t = document.getElementById('toast-gl');
+  if (!t) {
+    t = document.createElement('div'); t.id='toast-gl';
+    t.style.cssText='position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(10px);padding:10px 20px;border-radius:10px;font-size:.85rem;opacity:0;pointer-events:none;transition:all .3s;z-index:999;white-space:nowrap;font-family:var(--font-body)';
+    document.body.appendChild(t);
+  }
+  t.style.background  = isError?'#2c1e1e':'#1e2c1e';
+  t.style.border      = isError?'1px solid #cc2222':'1px solid var(--orange)';
+  t.style.color       = isError?'#ef9a9a':'#f0a070';
+  t.textContent=msg;
+  t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)';},3000);
+}
+
+init();
+</script>
+</body>
+</html>
