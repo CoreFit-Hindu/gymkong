@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GYM KONG</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --orange:#e8640a;--orange-light:#f07820;--orange-dark:#c4520a;
+  --blue:#1a4fa0;--blue-light:#2563c4;
+  --red-dark:#1a0505;--red-mid:#3d0a0a;--red-bg:#2a0606;
+  --text:#fff;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.4);
+  --border:rgba(255,255,255,0.15);--border-orange:rgba(232,100,10,0.5);
+  --font-display:'Black Han Sans',sans-serif;--font-body:'Nunito',sans-serif;
+}
+html,body{min-height:100vh;font-family:var(--font-body);}
+body{
+  background:radial-gradient(ellipse at top, #5c0808 0%, #2a0404 40%, #0d0202 100%);
+  display:flex;align-items:center;justify-content:center;padding:1.5rem;
+  position:relative;overflow:hidden;
+}
+
+/* Partículas de fondo */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(circle at 20% 50%, rgba(232,100,10,0.08) 0%, transparent 50%),
+             radial-gradient(circle at 80% 20%, rgba(180,30,10,0.12) 0%, transparent 40%);
+  pointer-events:none;
+}
+
+.login-wrap{
+  width:100%;max-width:420px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  animation:fadeUp 0.5s ease both;
+}
+
+/* LOGO */
+.logo-section{
+  text-align:center;margin-bottom:2.5rem;
+}
+.logo-svg{width:280px;height:auto;filter:drop-shadow(0 4px 20px rgba(232,100,10,0.4));}
+
+/* CARD */
+.login-card{
+  width:100%;background:rgba(0,0,0,0.5);
+  border:1px solid rgba(232,100,10,0.3);
+  border-radius:16px;padding:2rem;
+  backdrop-filter:blur(12px);
+  box-shadow:0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.field{
+  position:relative;margin-bottom:1rem;
+}
+.field svg{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;color:var(--text3);pointer-events:none;
+}
+.field input{
+  width:100%;height:52px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid var(--border-orange);
+  border-radius:10px;
+  padding:0 16px 0 46px;
+  font-family:var(--font-body);font-size:1rem;color:var(--text);
+  outline:none;transition:all 0.2s;
+}
+.field input::placeholder{color:var(--text3);}
+.field input:focus{
+  border-color:var(--orange);
+  background:rgba(232,100,10,0.08);
+  box-shadow:0 0 0 3px rgba(232,100,10,0.15);
+}
+
+.btn-login{
+  width:100%;height:54px;margin-top:0.5rem;
+  background:linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+  border:none;border-radius:10px;
+  color:#fff;font-family:var(--font-display);font-size:1.3rem;
+  letter-spacing:0.08em;cursor:pointer;
+  box-shadow:0 4px 20px rgba(232,100,10,0.4);
+  transition:all 0.2s;position:relative;overflow:hidden;
+}
+.btn-login::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);
+}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(232,100,10,0.5);}
+.btn-login:active{transform:translateY(0);}
+
+.forgot{
+  text-align:center;margin-top:1.25rem;
+  color:var(--text2);font-size:0.88rem;cursor:pointer;
+  transition:color 0.18s;
+}
+.forgot:hover{color:var(--orange-light);}
+
+.toast{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(10px);
+  background:#1a0505;border:1px solid var(--orange);color:var(--orange-light);
+  padding:10px 22px;border-radius:10px;font-size:0.88rem;
+  opacity:0;pointer-events:none;transition:all 0.3s;z-index:99;
+  white-space:nowrap;font-family:var(--font-body);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{border-color:#cc2222;color:#ef9a9a;background:#1a0505;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+
+  <!-- LOGO SVG GYM KONG -->
+  <div class="logo-section">
+    <svg class="logo-svg" viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg">
+      <!-- Gorila -->
+      <g transform="translate(20, 10)">
+        <!-- Cuerpo -->
+        <ellipse cx="55" cy="95" rx="28" ry="32" fill="#4a7fc1"/>
+        <!-- Cabeza -->
+        <circle cx="55" cy="55" r="22" fill="#5a8fd4"/>
+        <!-- Cara -->
+        <ellipse cx="55" cy="60" rx="14" ry="12" fill="#3a6fb0"/>
+        <!-- Ojos -->
+        <circle cx="49" cy="54" r="4" fill="white"/>
+        <circle cx="61" cy="54" r="4" fill="white"/>
+        <circle cx="50" cy="54" r="2" fill="#111"/>
+        <circle cx="62" cy="54" r="2" fill="#111"/>
+        <!-- Nariz -->
+        <ellipse cx="55" cy="61" rx="5" ry="3" fill="#2a5a9a"/>
+        <!-- Boca enojada -->
+        <path d="M47 67 Q55 63 63 67" stroke="#1a3a6a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Brazo izquierdo con mancuerna -->
+        <path d="M28 80 Q10 90 5 105" stroke="#4a7fc1" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <rect x="-2" y="100" width="14" height="5" rx="2" fill="#e8640a"/>
+        <circle cx="-4" cy="102" r="5" fill="#e8640a"/>
+        <circle cx="14" cy="102" r="5" fill="#e8640a"/>
+        <!-- Brazo derecho con mancuerna -->
+        <path d="M82 80 Q98 75 105 85" stroke="#4a7fc1" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <rect x="98" y="80" width="14" height="5" rx="2" fill="#e8640a"/>
+        <circle cx="96" cy="82" r="5" fill="#e8640a"/>
+        <circle cx="114" cy="82" r="5" fill="#e8640a"/>
+        <!-- Piernas -->
+        <path d="M40 125 Q35 140 30 150" stroke="#3a6fb0" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <path d="M70 125 Q75 140 80 150" stroke="#3a6fb0" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <!-- Zapatillas naranjas -->
+        <ellipse cx="28" cy="152" rx="10" ry="5" fill="#e8640a"/>
+        <ellipse cx="82" cy="152" rx="10" ry="5" fill="#e8640a"/>
+      </g>
+      <!-- TEXTO GYM -->
+      <text x="145" y="75" font-family="Black Han Sans,sans-serif" font-size="52" font-weight="900"
+        fill="#e8640a" stroke="#fff" stroke-width="2" paint-order="stroke">GYM</text>
+      <!-- TEXTO KONG -->
+      <text x="135" y="130" font-family="Black Han Sans,sans-serif" font-size="58" font-weight="900"
+        fill="#1a4fa0" stroke="#fff" stroke-width="2" paint-order="stroke">KONG</text>
+    </svg>
+  </div>
+
+  <div class="login-card">
+    <div class="field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <input type="text" id="dni" placeholder="Usuario (DNI)" inputmode="numeric" autocomplete="off">
+    </div>
+    <div class="field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <input type="password" id="pass" placeholder="Contraseña" autocomplete="off" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="btn-login" onclick="login()">INGRESAR</button>
+    <div class="forgot" onclick="alert('Contactá a tu instructor para recuperar tu contraseña.')">¿Olvidaste tu contraseña?</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER = 'https://gymkong-proxy.edu-gonza.workers.dev';
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const header = parseLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = parseLine(line);
+    const obj = {};
+    header.forEach((h,i) => obj[h.trim()] = String(vals[i]||'').trim());
+    return obj;
+  }).filter(r => Object.values(r).some(v=>v));
+}
+function parseLine(line) {
+  const result=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){result.push(cur);cur='';}else cur+=c;}
+  result.push(cur);
+  return result.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+
+function norm(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+
+async function login() {
+  const dni  = document.getElementById('dni').value.trim();
+  const pass = document.getElementById('pass').value.trim();
+  if (!dni || !pass) { toast('Ingresá DNI y contraseña', true); return; }
+
+  toast('Verificando…');
+  try {
+    const [respInst, respAlum] = await Promise.all([
+      fetch(WORKER + '/instructores'),
+      fetch(WORKER + '/alumnos')
+    ]);
+    const instructores = parseCSV(await respInst.text());
+    const alumnos      = parseCSV(await respAlum.text());
+
+    // Buscar instructor
+    const inst = instructores.find(r =>
+      norm(r['DNI']) === norm(dni) &&
+      norm(r['Contraseña inicial']||r['Contraseña Inicial']||'') === norm(pass)
+    );
+    if (inst) {
+      sessionStorage.setItem('gk_user', JSON.stringify({
+        nombre: String(inst['Nombre y Apellido']||'').trim(),
+        dni: String(inst['DNI']||'').trim(),
+        email: String(inst['Correo electronico (e-mail)']||'').trim(),
+        especialidad: String(inst['Especialidada/Diciplina']||'').trim(),
+        rol: 'instructor'
+      }));
+      window.location.href = 'instructores.html';
+      return;
+    }
+
+    // Buscar alumno
+    const alum = alumnos.find(r =>
+      norm(r['DNI']) === norm(dni) &&
+      norm(r['Contraseña Inicial']||r['Contraseña inicial']||'') === norm(pass)
+    );
+    if (alum) {
+      sessionStorage.setItem('gk_user', JSON.stringify({
+        nombre: String(alum['Nmbre y Apellido']||alum['Nombre y Apellido']||'').trim(),
+        dni: String(alum['DNI']||'').trim(),
+        actividad: String(alum['Actividad']||'').trim(),
+        horario: String(alum['Horario Asignado']||'').trim(),
+        rol: 'alumno'
+      }));
+      window.location.href = 'alumno.html';
+      return;
+    }
+
+    toast('DNI o contraseña incorrectos', true);
+  } catch(e) {
+    toast('Error de conexión: ' + e.message, true);
+  }
+}
+
+function toast(msg, isError=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
